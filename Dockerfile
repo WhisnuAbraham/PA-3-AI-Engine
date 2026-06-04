@@ -24,8 +24,11 @@ COPY --chown=user:user requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Install PyTorch CPU version TERAKHIR dengan force-reinstall
-# agar tidak bisa ditimpa oleh dependensi transformers dari PyPI
 RUN pip install --no-cache-dir --force-reinstall torch --index-url https://download.pytorch.org/whl/cpu
+
+# Hapus sisa-sisa folder NVIDIA yang korup (file too short) dari cache Hugging Face
+# karena kita hanya pakai versi CPU dan tidak butuh file-file CUDA ini
+RUN rm -rf /usr/local/lib/python3.10/site-packages/nvidia*
 
 # Verifikasi torch dan transformers berjalan dengan benar sebelum app di-deploy
 RUN python -c "import torch; print('PyTorch OK:', torch.__version__); from transformers import BertForSequenceClassification; print('Transformers OK')"
