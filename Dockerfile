@@ -23,11 +23,9 @@ COPY --chown=user:user requirements.txt .
 # Install semua requirements (tanpa torch dulu)
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Install PyTorch CPU version TERAKHIR dengan force-reinstall
-RUN pip install --no-cache-dir --force-reinstall torch --index-url https://download.pytorch.org/whl/cpu
-
-# Perbaiki typing-extensions yang sempat di-downgrade paksa oleh instalasi torch
-RUN pip install --no-cache-dir --upgrade typing-extensions pydantic
+# Install PyTorch CPU version TERAKHIR dengan force-reinstall dan TANPA DEPS
+# agar tidak merusak dependensi (seperti typing-extensions) milik FastAPI/Pydantic
+RUN pip install --no-cache-dir --force-reinstall --no-deps torch --index-url https://download.pytorch.org/whl/cpu
 
 # Hapus sisa-sisa folder NVIDIA yang korup (file too short) dari cache Hugging Face
 # karena kita hanya pakai versi CPU dan tidak butuh file-file CUDA ini
