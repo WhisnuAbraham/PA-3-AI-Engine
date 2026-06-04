@@ -4,6 +4,6 @@ pydantic
 pymongo
 python-dotenv
 pandas
-transformers
+transformers==4.41.0
 safetensors
 groq
