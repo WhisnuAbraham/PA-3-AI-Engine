@@ -1,0 +1,9 @@
+fastapi
+uvicorn
+pydantic
+pymongo
+python-dotenv
+pandas
+transformers
+safetensors
+groq
