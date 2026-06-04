@@ -1,5 +1,5 @@
-# Use official lightweight Python image
-FROM python:3.10-slim
+# Use official Python image (full version to ensure all C/C++ libraries exist for PyTorch)
+FROM python:3.10
 
 # Set environment variables
 ENV PYTHONUNBUFFERED=1 \
