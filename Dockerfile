@@ -20,11 +20,15 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Copy requirements first to leverage Docker cache
 COPY --chown=user:user requirements.txt .
 
-# Install PyTorch CPU version explicitly (saves ~2GB of space and RAM)
-RUN pip install --no-cache-dir torch --index-url https://download.pytorch.org/whl/cpu
-
-# Install other python dependencies
+# Install semua requirements (tanpa torch dulu)
 RUN pip install --no-cache-dir -r requirements.txt
+
+# Install PyTorch CPU version TERAKHIR dengan force-reinstall
+# agar tidak bisa ditimpa oleh dependensi transformers dari PyPI
+RUN pip install --no-cache-dir --force-reinstall torch --index-url https://download.pytorch.org/whl/cpu
+
+# Verifikasi torch dan transformers berjalan dengan benar sebelum app di-deploy
+RUN python -c "import torch; print('PyTorch OK:', torch.__version__); from transformers import BertForSequenceClassification; print('Transformers OK')"
 
 # Copy the rest of the application files
 COPY --chown=user:user . .
