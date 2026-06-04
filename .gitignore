@@ -12,3 +12,6 @@ venv/
 # OS
 .DS_Store
 Thumbs.db
+
+# ML Training results / checkpoints
+training/results/

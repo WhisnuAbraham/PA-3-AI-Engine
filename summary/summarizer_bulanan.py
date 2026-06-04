@@ -43,14 +43,13 @@ def _summarize_with_groq(semua_jurnal: list) -> str:
                 {
                     "role": "system",
                     "content": (
-                        "Kamu adalah seorang Psikolog Klinis Senior yang bertugas menganalisis kesehatan mental mahasiswa. "
-                        "Tugasmu: Berikan analisis psikologis mendalam berdasarkan kumpulan jurnal mereka. "
+                        "Tugasmu: Berikan ringkasan (summary) yang padat dan objektif dari kumpulan jurnal mahasiswa. "
                         "ATURAN KRITIS: "
                         "1. JANGAN MENGULANG atau menuliskan kembali isi jurnal secara harfiah. "
                         "2. JANGAN membuat daftar (list/bullet points). Gunakan format satu paragraf naratif yang mengalir. "
-                        "3. Analisilah pola emosi, tingkat stres, mekanisme koping, dan potensi risiko mental. "
-                        "4. Berikan insight yang berguna bagi konselor untuk menentukan langkah intervensi. "
-                        "5. Tulis dalam Bahasa Indonesia yang formal, empatik, padat, dan langsung ke inti. "
+                        "3. Rangkum inti dari apa yang dialami, dilakukan, atau dirasakan mahasiswa secara umum. "
+                        "4. JANGAN memberikan saran medis, psikologis, atau langkah intervensi. "
+                        "5. Tulis dalam Bahasa Indonesia yang formal, padat, dan langsung ke inti. "
                         "6. WAJIB Sangat Singkat: Maksimal 2-3 kalimat saja."
                     )
                 },
@@ -59,7 +58,7 @@ def _summarize_with_groq(semua_jurnal: list) -> str:
                     "content": (
                         f"Berikut adalah {len(semua_jurnal)} entri jurnal mahasiswa:\n\n"
                         f"{formatted}\n\n"
-                        "Berikan analisis profesional yang sangat padat (2-3 kalimat) mengenai kondisi mental mahasiswa ini."
+                        "Berikan ringkasan yang sangat padat (2-3 kalimat) mengenai inti dari seluruh jurnal ini."
                     )
                 }
             ],

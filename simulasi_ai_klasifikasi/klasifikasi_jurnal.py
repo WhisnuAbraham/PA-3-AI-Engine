@@ -21,36 +21,40 @@ model.eval()
 print(f"IndoBERT siap di device: {device}")
 
 level_map = {
-    0: "Level 0 (Positif / Baik)",
-    1: "Level 1 (Ekspresi Emosi Ringan)",
-    2: "Level 2 (Perlu Pemantauan)"
+    0: "Level 0 (Normal / Positif)",
+    1: "Level 1 (Perlu Pemantauan)",
+    2: "Level 2 (Perlu Perhatian Serius)",
+    3: "Level 3 (Krisis / Darurat)"
 }
 
+# Red flags Level 3: HANYA ideasi bunuh diri eksplisit, kekerasan, atau menyerah pada hidup
+# Berdasarkan Dataset - Dataset.csv (kolom ke-3 sebagai ground truth)
+# Level 1 & 2 (insomnia, fokus, emosi, motivasi, dll.) ditangani oleh IndoBERT
 red_flags = [
-    # Keputusasaan
-    "merasa putus asa", "kehilangan harapan", "tidak ada harapan",
-    "tidak kuat lagi", "sudah tidak sanggup",
-    # Gangguan tidur / fisik berat
-    "tidak bisa tidur", "insomnia", "tidak tidur sama sekali",
-    "sulit tidur terus menerus",
-    # Kondisi mental berat
-    "merasa kosong", "hati kosong", "hidup terasa kosong", "jiwa kosong",
-    "pikiran kacau", "tidak bisa berpikir jernih",
-    "emosi tidak stabil", "sering menangis",
-    "berantem",
-    # Kehilangan fungsi
-    "tidak bisa fokus", "tidak bisa konsentrasi",
-    "kehilangan motivasi total", "tidak bisa menjalani aktivitas",
-    "tidak punya energi",
-    # Self-worth rendah
-    "membenci diri sendiri", "merasa tidak berharga",
-    "merasa gagal", "merasa tidak berguna", "frustrasi", "frustasi",
-    # Bahaya (PALING KRITIS)
-    "ingin menyerah", "putus asa", "ingin mati",
-    "bunuh diri", "mau mati", "mending mati", "lebih baik mati",
-    "mampus", "mau mampus", "sekalian mati",
-    "insomnia parah", "tidak bisa tidur bermalam-malam",
-    "merasa frustrasi", "merasa frustasi"
+    # Ideasi bunuh diri eksplisit
+    "ingin mati",
+    "mau mati",
+    "mending mati",
+    "lebih baik mati",
+    "sekalian mati",
+    "mampus",
+    "mau mampus",
+    "bunuh diri",
+    "tidak mau hidup lagi",
+    "mengakhiri hidup",
+    "mengakhiri semuanya",
+
+    # Menyerah pada hidup secara eksplisit
+    "ingin menyerah pada hidup",
+    "tidak ada gunanya bertahan",
+    "tidak ada gunanya hidup",
+    "menyerah pada hidup",
+
+    # Keinginan kekerasan / menyakiti
+    "ingin menyakiti",
+    "berbuat kekerasan",
+    "melukai seseorang",
+    "tidak bisa mengontrol keinginan untuk berbuat kekerasan",
 ]
 
 def _is_negated(text: str, phrase: str) -> bool:
@@ -93,7 +97,7 @@ def classify_text(text: str) -> dict:
         pred_class   = torch.argmax(outputs.logits, dim=-1).item()
 
     return {
-        "level":      pred_class, # Sekarang output kelas IndoBERT murni 0, 1, atau 2
+        "level":      pred_class, # Output kelas IndoBERT: 0, 1, 2, atau 3
         "label":      level_map[pred_class],
         "confidence": round(confidence, 2),
         "red_flag":   None

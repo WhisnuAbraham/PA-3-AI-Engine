@@ -27,6 +27,11 @@ class EmotionInput(BaseModel):
 class UserInput(BaseModel):
     nim: str
 
+class RecommendInput(BaseModel):
+    nim: str
+    mood: Optional[str] = None
+    feeling: Optional[str] = None
+
 class SummarizeInput(BaseModel):
     nim: str
     journal_texts: list[str] 
@@ -58,10 +63,20 @@ async def classify_journal(data: JournalInput):
     is_journal_empty = not (data.text and data.text.strip())
     predictive_alert = evaluate_predictive_risk(recent_scores, data.days_since_last_journal, is_journal_empty)
     
-    if predictive_alert["is_high_risk"]:
-        # Logic Layered: Jika tren menunjukkan krisis (Level 3), override level jurnal
-        result["level"] = 3
-        result["label"] = "Level 3 (Krisis / Deteksi Tren Menurun)"
+    pred_level = predictive_alert.get("predictive_level", 0)
+    current_level = result.get("level", 0)
+    
+    if pred_level > current_level:
+        # Logic Layered: Ambil level maksimum antara IndoBERT dan Prediktif Mood
+        result["level"] = pred_level
+        
+        # Sesuaikan label berdasarkan level baru
+        if pred_level == 3:
+            result["label"] = "Level 3 (Krisis / Deteksi Tren Menurun)"
+        elif pred_level == 2:
+            result["label"] = "Level 2 (Perhatian Serius / Deteksi Tren Menurun)"
+        elif pred_level == 1:
+            result["label"] = "Level 1 (Pemantauan / Deteksi Tren Menurun)"
         
         # Gabungkan alasan deteksi ke dalam red_flag
         existing_flags = result.get("red_flag", "")
@@ -85,12 +100,12 @@ async def generate_popup(data: EmotionInput):
     return {"status": "success", "nim": data.nim, "reply": reply}
 
 @app.post("/api/recommend")
-async def recommend_quote(data: UserInput):
+async def recommend_quote(data: RecommendInput):
     """
-    Input : nim
-    Output: quote — pesan motivasi berdasarkan emosi terakhir mahasiswa
+    Input : nim, mood (opsional), feeling (opsional)
+    Output: quote — pesan motivasi berdasarkan emosi yang dikirim atau terakhir mahasiswa
     """
-    quote = get_recommendation(data.nim)
+    quote = get_recommendation(data.nim, data.feeling, data.mood)
     return {"status": "success", "nim": data.nim, "quote": quote}
 
 

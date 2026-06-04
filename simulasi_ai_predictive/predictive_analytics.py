@@ -130,9 +130,10 @@ def run_clinical_analysis() -> list:
 def evaluate_predictive_risk(recent_emotions: list[float], days_since_last_journal: int, is_journal_empty: bool) -> dict:
     """
     Evaluasi prediktif mengecek riwayat emosi (skor gabungan) dan rentang pengisian jurnal.
+    Meresolusi level prediktif (0-3) berdasarkan riwayat mood.
     """
     alert = {
-        "is_high_risk": False,
+        "predictive_level": 0,
         "reason": ""
     }
     
@@ -145,21 +146,30 @@ def evaluate_predictive_risk(recent_emotions: list[float], days_since_last_journ
 
     # Kondisi 1: Tidak mengisi jurnal sudah lama (14 hari) + historis mood cenderung buruk
     if is_journal_empty and days_since_last_journal >= 14 and avg_score >= 4.0:
-        alert["is_high_risk"] = True
+        alert["predictive_level"] = 3
         alert["reason"] = f"Pasif {days_since_last_journal} hari tanpa jurnal dengan riwayat mood menurun (avg: {avg_score:.1f})."
         return alert
 
     # Kondisi 2: Walaupun ada jurnal, mood memburuk secara konsisten dalam rentang 14 catatan terakhir
     if total_hari >= 14 and avg_score >= 4.0:
-        alert["is_high_risk"] = True
+        alert["predictive_level"] = 3
         alert["reason"] = f"Penurunan mood menetap berdasarkan riwayat rentang panjang (avg score: {avg_score:.1f})."
         return alert
         
-    # Kondisi 3: Mood memburuk drastis pada 3 observasi terakhir (bukan pertama)
-    if total_hari >= 3 and all(x >= 4.0 for x in recent_emotions[-3:]):
-        alert["is_high_risk"] = True
-        alert["reason"] = "Mood & perasaan memburuk dalam 3 catatan terakhir secara konsisten (skor >= 4.0)."
-        return alert
+    # Kondisi 3: Evaluasi 3 hari terakhir (Trend Jangka Pendek)
+    if total_hari >= 3:
+        last_3 = recent_emotions[-3:]
+        avg_3 = sum(last_3) / 3
+        
+        if avg_3 >= 4.0:
+            alert["predictive_level"] = 3
+            alert["reason"] = f"Mood & perasaan sangat memburuk dalam 3 hari terakhir (avg skor: {avg_3:.1f})."
+        elif avg_3 >= 3.5:
+            alert["predictive_level"] = 2
+            alert["reason"] = f"Mood & perasaan cukup memburuk dalam 3 hari terakhir (avg skor: {avg_3:.1f})."
+        elif avg_3 >= 3.0:
+            alert["predictive_level"] = 1
+            alert["reason"] = f"Mood & perasaan kurang stabil dalam 3 hari terakhir (avg skor: {avg_3:.1f})."
 
     return alert
 
