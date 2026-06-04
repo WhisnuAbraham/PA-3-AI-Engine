@@ -14,8 +14,16 @@ jobs:
           fetch-depth: 0
           lfs: true
 
+      - name: Install Git LFS and Pull files
+        run: |
+          git lfs install
+          git lfs pull
+
       - name: Push to hub
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: |
-          git push --force https://whisnupenyayang:$HF_TOKEN@huggingface.co/spaces/whisnupenyayang/pa3-ai-engine-test main
+          git config --global credential.helper store
+          echo "https://whisnupenyayang:$HF_TOKEN@huggingface.co" > ~/.git-credentials
+          git remote add space https://huggingface.co/spaces/whisnupenyayang/pa3-ai-engine-test
+          git push --force space main
