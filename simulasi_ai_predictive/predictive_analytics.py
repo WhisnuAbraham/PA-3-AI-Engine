@@ -162,7 +162,7 @@ def evaluate_predictive_risk(recent_emotions: list[float], days_since_last_journ
         avg_3 = sum(last_3) / 3
         
         if avg_3 >= 4.0:
-            alert["predictive_level"] = 3
+            alert["predictive_level"] = 2
             alert["reason"] = f"Mood & perasaan sangat memburuk dalam 3 hari terakhir (avg skor: {avg_3:.1f})."
         elif avg_3 >= 3.5:
             alert["predictive_level"] = 2
