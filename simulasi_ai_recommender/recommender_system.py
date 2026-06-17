@@ -26,7 +26,6 @@ def _get_mock_fallback(feeling: str) -> str:
     """Cadangan jika API error atau kuota habis."""
     return f"Tetap semangat! Meskipun kamu sedang merasa {feeling}, ingatlah bahwa setiap hari adalah kesempatan baru untuk memulai kembali."
 
-# FUNGSI UTAMA — dipanggil oleh main.py
 def get_recommendation(nim: str, feeling: str = None, mood: str = None) -> str:
     """
     Menghasilkan quote motivasi berdasarkan emosi (mood & feeling) mahasiswa.
@@ -52,7 +51,6 @@ def get_recommendation(nim: str, feeling: str = None, mood: str = None) -> str:
                 emosi_label = last_entry.get('perasaan', 'Biasa Saja')
                 mood_label = last_entry.get('mood_label', 'Netral')
             else:
-                # Default fallback jika benar-benar tidak ada data
                 emosi_label = "Biasa Saja"
                 mood_label = "Netral"
 
@@ -61,10 +59,8 @@ def get_recommendation(nim: str, feeling: str = None, mood: str = None) -> str:
             emosi_label = "Biasa Saja"
             mood_label = "Netral"
 
-    # Context untuk AI
     context_perasaan = f"Kategori Mood: {mood_label}, Perasaan Spesifik: {emosi_label}" if mood_label else f"Perasaan: {emosi_label}"
 
-    # Generate via Groq
     if not USE_MOCK and client:
         try:
             chat_completion = client.chat.completions.create(

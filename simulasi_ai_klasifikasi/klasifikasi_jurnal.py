@@ -27,9 +27,6 @@ level_map = {
     3: "Level 3 (Krisis / Darurat)"
 }
 
-# Red flags Level 3: HANYA ideasi bunuh diri eksplisit, kekerasan, atau menyerah pada hidup
-# Berdasarkan Dataset - Dataset.csv (kolom ke-3 sebagai ground truth)
-# Level 1 & 2 (insomnia, fokus, emosi, motivasi, dll.) ditangani oleh IndoBERT
 red_flags = [
     # Ideasi bunuh diri eksplisit
     "ingin mati",

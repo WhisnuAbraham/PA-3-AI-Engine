@@ -20,7 +20,6 @@ if __name__ == "__main__":
     try:
         db = get_database()
         print(f"Berhasil terhubung ke database: {db.name}")
-        # Test query to a collection (e.g., daily_checkins)
         count = db.daily_checkins.count_documents({})
         print(f"Jumlah dokumen di daily_checkins: {count}")
     except Exception as e:
