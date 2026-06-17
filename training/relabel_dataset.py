@@ -12,27 +12,11 @@ def assign_new_level(row):
     teks = str(row.get('text_clean', '')).lower()
     label_asli = str(row.get('label', '')).lower()
 
-    # ──────────────────────────────────────────────────────────────────
-    # LEVEL 3 — Krisis / Darurat (Rule-Based, Prioritas Tertinggi)
-    # Berdasarkan Dataset - Dataset.csv kolom ke-3:
-    #   - Ideasi bunuh diri eksplisit
-    #   - Keinginan kekerasan terhadap diri/orang lain
-    #   - Menyerah pada hidup secara eksplisit
-    # ──────────────────────────────────────────────────────────────────
+    # LEVEL 3 — Krisis / Darurat Rule-Based
     if convert_to_pa3_levels(teks, label_asli) == 3:
         return 3
 
-    # ──────────────────────────────────────────────────────────────────
     # LEVEL 2 — Perlu Perhatian Serius
-    # Berdasarkan Dataset - Dataset.csv kolom ke-3:
-    #   - Keputusasaan & kehilangan harapan berat
-    #   - Insomnia parah / tidak bisa tidur bermalam-malam
-    #   - Frustrasi berat, membenci diri sendiri
-    #   - Merasa tidak berharga / tidak berguna
-    #   - Pikiran kacau / tidak bisa berpikir jernih
-    #   - Hidup/jiwa terasa kosong
-    #   - Sudah tidak kuat / tidak sanggup
-    # ──────────────────────────────────────────────────────────────────
     level_2_keywords = [
         # Keputusasaan & kehilangan harapan berat
         'putus asa', 'keputusasaan', 'tidak ada harapan', 'kehilangan harapan',
@@ -71,17 +55,7 @@ def assign_new_level(row):
         'saya menyusahkan orang lain',
     ]
 
-    # ──────────────────────────────────────────────────────────────────
     # LEVEL 1 — Perlu Pemantauan
-    # Berdasarkan Dataset - Dataset.csv kolom ke-3:
-    #   - Emosi tidak stabil, sering menangis (tapi bukan krisis)
-    #   - Tidak bisa fokus / konsentrasi
-    #   - Kehilangan motivasi total
-    #   - Hati kosong / hidup datar
-    #   - Konflik sosial / berantem
-    #   - Gangguan tidur ringan (sulit tidur, tidak tidur sama sekali)
-    #   - Kelelahan, capek berat, stres ringan-sedang
-    # ──────────────────────────────────────────────────────────────────
     level_1_keywords = [
         # Emosi tidak stabil / menangis (ringan)
         'emosi tidak stabil', 'sering menangis', 'menangis tanpa alasan',
@@ -121,17 +95,13 @@ def assign_new_level(row):
         'pusing', 'tugas', 'malas', 'susah', 'sulit', 'dosen',
         'mumet', 'revisi', 'burnout ringan', 'ngantuk',
     ]
-
-    # Cek Level 2
     if any(keyword in teks for keyword in level_2_keywords):
         return 2
 
-    # Cek Level 1
     elif any(keyword in teks for keyword in level_1_keywords):
         return 1
 
     else:
-        # Fallback berdasarkan label sentiment
         if label_asli == 'negative':
             return 1
         else:
@@ -142,23 +112,22 @@ def main():
     input_file = os.path.join(base_dir, 'data', 'train_final_ready.csv')
     output_file = os.path.join(base_dir, 'training', 'train_dataset_baru.csv')
 
-    print(f"Membaca dataset lama dari: {input_file}...")
+    print(f"Membaca dataset dari: {input_file}...")
 
     try:
         df = pd.read_csv(input_file)
     except FileNotFoundError:
-        print("Data tidak ditemukan! Pastikan path benar.")
+        print("Data tidak ditemukan")
         return
 
-    print("Memproses relabeling dataset menjadi Level 0, 1, 2, 3...")
-    print("(Sesuai definisi dari Dataset - Dataset.csv kolom ke-3)")
+    print("Memproses relabeling dataset menjadi Level 0, 1, 2, 3")
     df['final_level'] = df.apply(assign_new_level, axis=1)
 
     os.makedirs(os.path.join(base_dir, 'training'), exist_ok=True)
 
     df.to_csv(output_file, index=False)
 
-    print(f"\nRelabeling selesai!")
+    print(f"\nRelabeling selesai")
     print(f"Dataset baru tersimpan di: {output_file}")
 
     print("\n" + "=" * 55)

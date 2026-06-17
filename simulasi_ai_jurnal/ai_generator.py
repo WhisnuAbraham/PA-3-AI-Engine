@@ -61,5 +61,4 @@ def get_ai_response(journal_text: str, emotion_label: str = None) -> str:
         return get_mock_response(emosi)
 
 if __name__ == "__main__":
-    # Test simulation
     print(f"AI Response: {get_ai_response('Hari ini terasa sangat berat karena banyak tugas', 'Lelah')}")

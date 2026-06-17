@@ -42,11 +42,9 @@ async def classify_journal(data: JournalInput):
     Input : nim, text (isi jurnal), mood_history (list of mood/feeling names), days_since_last_journal
     Output: level (0-3), label, confidence, red_flag
     """
-    # 1. Base Classification (Text)
     if data.text and data.text.strip():
         result = classify_text(data.text)
     else:
-        # Default jika mahasiswa tidak kirim teks
         result = {
             "level": 0,
             "label": "Level 0 (Aman / Tidak ada Jurnal)",
@@ -54,8 +52,6 @@ async def classify_journal(data: JournalInput):
             "red_flag": "Mahasiswa tidak menulis jurnal hari ini"
         }
         
-    # 2. Predictive Analytics Check (History of Mood/Feelings)
-    # Convert mood_history (names) to scores using logic from predictive_analytics.py
     from simulasi_ai_predictive.predictive_analytics import get_combined_score, evaluate_predictive_risk
     
     recent_scores = [get_combined_score(entry.mood, entry.feeling) for entry in data.mood_history]
@@ -67,10 +63,8 @@ async def classify_journal(data: JournalInput):
     current_level = result.get("level", 0)
     
     if pred_level > current_level:
-        # Logic Layered: Ambil level maksimum antara IndoBERT dan Prediktif Mood
         result["level"] = pred_level
         
-        # Sesuaikan label berdasarkan level baru
         if pred_level == 3:
             result["label"] = "Level 3 (Krisis / Deteksi Tren Menurun)"
         elif pred_level == 2:
@@ -78,7 +72,6 @@ async def classify_journal(data: JournalInput):
         elif pred_level == 1:
             result["label"] = "Level 1 (Pemantauan / Deteksi Tren Menurun)"
         
-        # Gabungkan alasan deteksi ke dalam red_flag
         existing_flags = result.get("red_flag", "")
         new_flag = f"[PREDICTIVE AI]: {predictive_alert['reason']}"
         

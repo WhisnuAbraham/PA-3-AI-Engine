@@ -4,12 +4,10 @@ from dotenv import load_dotenv
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-# Path ke file .env di dalam folder pa3-ai-engine (prioritas utama)
 env_path = os.path.join(BASE_DIR, '..', '.env')
 if os.path.exists(env_path):
     load_dotenv(dotenv_path=env_path, override=True)
 else:
-    # Fallback jika tidak ketemu di ../.env, coba di root (jika dijalankan dari pa3-ai-engine)
     load_dotenv()
 
 GROQ_MODEL = os.getenv("GROQ_MODEL", "llama-3.3-70b-versatile")
@@ -31,7 +29,6 @@ def _summarize_with_groq(semua_jurnal: list) -> str:
     if not client:
         return _fallback_summary(semua_jurnal)
 
-    # Format jurnal dengan nomor urut
     formatted = "\n".join([
         f"Catatan {i + 1}: {text.strip()}"
         for i, text in enumerate(semua_jurnal)
@@ -106,10 +103,6 @@ def generate_monthly_summary(nim: str, journal_texts: list) -> str:
     return proses_jurnal_sebulan(journal_texts)
 
 
-
-# =====================================================================
-# SIMULASI — hanya berjalan saat file dijalankan langsung
-# =====================================================================
 if __name__ == "__main__":
     contoh_jurnal = [
         "Hari ini merasa sangat cemas karena deadline PKM dan tugas akhir makin dekat.",
